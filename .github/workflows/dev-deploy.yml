@@ -1,0 +1,62 @@
+name: DEV Deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - ".github/workflows/**"
+env:
+  ssh-key: "${{ secrets.DEV_SSH_KEY }}"
+  host: "${{ vars.DEV_NAME }}@${{ vars.DEV_IP }}"
+  name: "${GITHUB_REPOSITORY#*/}-dev"
+
+jobs:
+  Build:
+    runs-on: ubuntu-22.04
+    env:
+      tag: "latest" #or ${{ github.sha }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build docker image
+        run: |
+          docker build . -t ${{ env.name }}:${{ env.tag }}
+
+      - name: Save docker image
+        run: |
+          docker save -o ${{ env.name }}.tar ${{ env.name }}:${{ env.tag }}
+
+      - name: Generate SSH key
+        run: |
+          echo "${{ env.ssh-key }}" > ssh-key.pem
+          sudo chmod 400 ssh-key.pem
+
+      - name: Generate .env
+        run: |
+          echo "PORT=${{ vars.DEV_PORT }}" >> .env
+          echo "LOG_LEVEL=${{ vars.DEV_LOG_LEVEL }}" >> .env
+
+      - name: Copy image to EC2
+        run: |
+          scp -i ssh-key.pem -o StrictHostKeyChecking=no ${{ env.name }}.tar ${{ env.host }}:${{ env.name }}.tar
+          scp -i ssh-key.pem -o StrictHostKeyChecking=no .env ${{ env.host }}:backend/.env
+
+  Deploy:
+    needs: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Generate SSH key
+        run: |
+          echo "${{ env.ssh-key }}" > ssh-key.pem
+          sudo chmod 400 ssh-key.pem
+
+      - name: Start image
+        run: |
+          ssh -i ssh-key.pem -o StrictHostKeyChecking=no ${{ env.host }} ' \
+          sudo docker load -i '${{ env.name }}'.tar && \
+          sudo docker compose -f backend/compose.yaml up -d && \
+          sudo docker image prune -af'
