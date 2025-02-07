@@ -6,4 +6,4 @@ import { TokenController } from './token.controller';
   imports: [TokenModule],
   controllers: [TokenController],
 })
-export class TokenhApi {}
+export class TokenApi {}

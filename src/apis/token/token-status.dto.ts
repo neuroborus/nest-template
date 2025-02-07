@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNumber, IsString } from 'class-validator';
-import { TokenStatus } from '@/entities/token';
-
+import { TokenData } from '@/entities/token';
 
 @Exclude()
-export class TokenStatusDto implements TokenStatus {
+export class TokenStatusDto implements TokenData {
   @Expose()
   @IsString()
   @ApiProperty({ type: String, example: 'https://eth.llamarpc.com' })
-  tokenAddress: string;
+  rpcUrl: string;
 
   @Expose()
   @IsString()
