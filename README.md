@@ -31,6 +31,17 @@ This layers designed to maintain structure as it scales and organized by levels.
   "logLevel": "info"
 }
 ```
+## Tokencheck
+`/token`
+```
+{
+  "tokenAddress": "https://eth.llamarpc.com",
+  "symbol": "USDT",
+  "decimals": 6,
+  "totalSupplyWei": "76922650752242969",
+  "totalSupplyTokens": "76922650752.242969"
+}
+```
 
 ## Swagger
 `/swagger`
