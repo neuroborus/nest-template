@@ -1,6 +1,7 @@
 export interface TokenData {
+  tokenAddress: string;
   symbol: string;
-  decimals: number;
+  decimals: string;
   totalSupplyWei: string;
   totalSupplyTokens: string;
 }

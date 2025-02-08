@@ -1,4 +1,5 @@
 import ABI from './erc-20.abi.json';
-export * from './ethers.abi.multicall';
+import { MULTICALL_ABI } from './ethers.abi.multicall';
 
-export const abi = ABI;
+export const erc20Abi = ABI;
+export const multicallAbi = MULTICALL_ABI;

@@ -1,37 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TokenData } from '@/entities/token';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
-import { abi, abiMulticall } from '@/abis';
-import { Networks } from './networks';
+import { erc20Abi, multicallAbi } from '@/abis';
 
 @Injectable()
 export class TokenService {
-  private networks: Networks;
   private contractInterface: ethers.Interface;
+  private readonly logger = new Logger(TokenService.name);
 
   constructor(private readonly config: ConfigService) {
-    this.networks = {
-      rpcUrl: this.config.getOrThrow('rpcUrl') || '',
-      multicallAddress: this.config.getOrThrow('multicallAddress') || '',
-    };
-
-    this.contractInterface = new ethers.Interface(abi);
+    this.contractInterface = new ethers.Interface(erc20Abi);
   }
 
-  private async fetchTokenData(network: Networks, tokenAddress: string) {
+  private unpackMulticall(
+    returnData: ethers.BytesLike,
+    functionName: string,
+  ): string {
+    return this.contractInterface
+      .decodeFunctionResult(functionName, returnData)[0]
+      .toString();
+  }
+
+  private weiToToken(wei: string, decimals: string): string {
+    const weiBigN: BigNumber = new BigNumber(wei);
+    const decimalsNum: number = Number(decimals);
+    return weiBigN
+      .dividedBy(new BigNumber(10).pow(decimalsNum))
+      .toFixed(decimalsNum);
+  }
+
+  private async fetchTokenData(tokenAddress: string) {
     try {
-      if (!tokenAddress) {
-        throw new Error(`Missing configuration for network: ${network.rpcUrl}`);
-      }
-
-      network.provider = new ethers.JsonRpcProvider(network.rpcUrl);
-
       const multicall = new ethers.Contract(
-        network.multicallAddress,
-        abiMulticall,
-        network.provider,
+        this.config.getOrThrow('multicallAddress'),
+        multicallAbi,
+        new ethers.JsonRpcProvider(this.config.getOrThrow('rpcUrl')),
       );
 
       const calls = [
@@ -51,34 +56,29 @@ export class TokenService {
 
       const [, returnData] = await multicall.aggregate(calls);
 
-      const decimals: number = Number(
-        this.contractInterface.decodeFunctionResult(
-          'decimals',
-          returnData[1],
-        )[0],
+      const decimals: string = this.unpackMulticall(returnData[1], 'decimals');
+      const totalSupplyWei: string = this.unpackMulticall(
+        returnData[2],
+        'totalSupply',
       );
-      const totalSupplyWei: string = this.contractInterface
-        .decodeFunctionResult('totalSupply', returnData[2])[0]
-        .toString();
-      const totalSupplyWeiBigN: BigNumber = new BigNumber(totalSupplyWei);
 
       return {
-        symbol: this.contractInterface.decodeFunctionResult(
-          'symbol',
-          returnData[0],
-        )[0],
+        tokenAddress: tokenAddress,
+        symbol: this.unpackMulticall(returnData[0], 'symbol'),
         decimals: decimals,
         totalSupplyWei: totalSupplyWei,
-        totalSupplyTokens: totalSupplyWeiBigN
-          .dividedBy(new BigNumber(10).pow(decimals))
-          .toFixed(decimals),
+        totalSupplyTokens: this.weiToToken(totalSupplyWei, decimals),
       };
     } catch (error) {
+      this.logger.error(`Error fetching token data: ${error.message}`);
       throw new Error(`Error fetching token data: ${error.message}`);
     }
   }
 
   public getTokenStatus(tokenAddress: string): Promise<TokenData> {
-    return this.fetchTokenData(this.networks, tokenAddress);
+    if (!tokenAddress) {
+      throw new Error(`Missing token address`);
+    }
+    return this.fetchTokenData(tokenAddress);
   }
 }

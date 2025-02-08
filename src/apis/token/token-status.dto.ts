@@ -4,16 +4,24 @@ import { IsNumber, IsString } from 'class-validator';
 import { TokenData } from '@/entities/token';
 
 @Exclude()
-export class TokenStatusDto implements TokenData {
+export class TokenDataDto implements TokenData {
+  @Expose()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    example: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+  })
+  tokenAddress: string;
+
   @Expose()
   @IsString()
   @ApiProperty({ type: String, example: 'USDT' })
   symbol: string;
 
   @Expose()
-  @IsNumber()
-  @ApiProperty({ type: Number, example: 6 })
-  decimals: number;
+  @IsString()
+  @ApiProperty({ type: String, example: '6' })
+  decimals: string;
 
   @Expose()
   @IsString()
