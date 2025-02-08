@@ -17,7 +17,7 @@ export class TokenController {
     description: 'Token Address',
     example: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
   })
-  getHealth(@Param('tokenAddress') tokenAddress: string): Promise<TokenData> {
+  getToken(@Param('tokenAddress') tokenAddress: string): Promise<TokenData> {
     return this.token.getTokenStatus(tokenAddress);
   }
 }

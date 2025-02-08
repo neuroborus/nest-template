@@ -7,13 +7,15 @@ const logLevel = process.env.LOG_LEVEL
   ? process.env.LOG_LEVEL.toLowerCase()
   : 'info';
 
-const multicallAddress = process.env.MULTICALL_ADDRESS
-  ? process.env.MULTICALL_ADDRESS
-  : '0xcA11bde05977b3631167028862bE2a173976CA11';
+if (!process.env.MULTICALL_ADDRESS) {
+  throw new Error('MULTICALL_ADDRESS environment variable is not set');
+}
+const multicallAddress = process.env.MULTICALL_ADDRESS;
 
-const rpcUrl = process.env.RPC_URL
-  ? process.env.RPC_URL
-  : 'https://eth.llamarpc.com';
+if (!process.env.RPC_URL) {
+  throw new Error('RPC_URL environment variable is not set');
+}
+const rpcUrl = process.env.RPC_URL;
 
 /*
  This configuration is used directly only when dependency injection is not working,

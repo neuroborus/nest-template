@@ -7,11 +7,6 @@ import { TokenData } from '@/entities/token';
 export class TokenStatusDto implements TokenData {
   @Expose()
   @IsString()
-  @ApiProperty({ type: String, example: 'https://eth.llamarpc.com' })
-  rpcUrl: string;
-
-  @Expose()
-  @IsString()
   @ApiProperty({ type: String, example: 'USDT' })
   symbol: string;
 
