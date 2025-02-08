@@ -20,6 +20,6 @@ export class TokenController {
   getTokenData(
     @Param('tokenAddress') tokenAddress: string,
   ): Promise<TokenData> {
-    return this.token.getTokenStatus(tokenAddress);
+    return this.token.getTokenData(tokenAddress);
   }
 }

@@ -7,20 +7,25 @@ import { erc20Abi, multicallAbi } from '@/abis';
 
 @Injectable()
 export class TokenService {
-  private contractInterface: ethers.Interface;
+  private contractInterface: ethers.Interface = new ethers.Interface(erc20Abi);
   private readonly logger = new Logger(TokenService.name);
 
-  constructor(private readonly config: ConfigService) {
-    this.contractInterface = new ethers.Interface(erc20Abi);
-  }
+  constructor(private readonly config: ConfigService) {}
 
-  private unpackMulticall(
-    returnData: ethers.BytesLike,
-    functionName: string,
-  ): string {
-    return this.contractInterface
-      .decodeFunctionResult(functionName, returnData)[0]
-      .toString();
+  private unpackMulticall(returnData: ethers.BytesLike[]): {
+    [key: string]: string;
+  } {
+    return {
+      symbol: this.contractInterface
+        .decodeFunctionResult('symbol', returnData[0])[0]
+        .toString(),
+      decimals: this.contractInterface
+        .decodeFunctionResult('decimals', returnData[1])[0]
+        .toString(),
+      totalSupplyWei: this.contractInterface
+        .decodeFunctionResult('totalSupply', returnData[2])[0]
+        .toString(),
+    };
   }
 
   private weiToToken(wei: string, decimals: string): string {
@@ -56,26 +61,26 @@ export class TokenService {
 
       const [, returnData] = await multicall.aggregate(calls);
 
-      const decimals: string = this.unpackMulticall(returnData[1], 'decimals');
-      const totalSupplyWei: string = this.unpackMulticall(
-        returnData[2],
-        'totalSupply',
-      );
+      const decodedData = this.unpackMulticall(returnData);
 
       return {
         tokenAddress: tokenAddress,
-        symbol: this.unpackMulticall(returnData[0], 'symbol'),
-        decimals: decimals,
-        totalSupplyWei: totalSupplyWei,
-        totalSupplyTokens: this.weiToToken(totalSupplyWei, decimals),
+        symbol: decodedData.symbol,
+        decimals: decodedData.decimals,
+        totalSupplyWei: decodedData.totalSupplyWei,
+        totalSupplyTokens: this.weiToToken(
+          decodedData.totalSupplyWei,
+          decodedData.decimals,
+        ),
       };
     } catch (error) {
-      this.logger.error(`Error fetching token data: ${error.message}`);
-      throw new Error(`Error fetching token data: ${error.message}`);
+      const message = `Error fetching token data: ${error.message}`;
+      this.logger.error(message);
+      throw new Error(message);
     }
   }
 
-  public getTokenStatus(tokenAddress: string): Promise<TokenData> {
+  public getTokenData(tokenAddress: string): Promise<TokenData> {
     if (!tokenAddress) {
       throw new Error(`Missing token address`);
     }
