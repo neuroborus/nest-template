@@ -2,7 +2,7 @@ import { Controller, Get, SerializeOptions, Param } from '@nestjs/common';
 import { TokenService } from '@/services/token';
 import { ApiResponse, ApiParam } from '@nestjs/swagger';
 import { TokenData } from '@/entities/token';
-import { TokenDataDto } from './token-status.dto';
+import { TokenDataDto } from './token-data.dto';
 
 @Controller('token')
 export class TokenController {

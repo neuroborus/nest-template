@@ -7,14 +7,16 @@ import { erc20Abi, multicallAbi } from '@/abis';
 
 @Injectable()
 export class TokenService {
-  private contractInterface: ethers.Interface = new ethers.Interface(erc20Abi);
+  private readonly contractInterface: ethers.Interface = new ethers.Interface(
+    erc20Abi,
+  );
   private readonly logger = new Logger(TokenService.name);
 
   constructor(private readonly config: ConfigService) {}
 
-  private unpackMulticall(returnData: ethers.BytesLike[]): {
-    [key: string]: string;
-  } {
+  private unpackMulticall(
+    returnData: ethers.BytesLike[],
+  ): Record<string, string> {
     return {
       symbol: this.contractInterface
         .decodeFunctionResult('symbol', returnData[0])[0]

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { TokenData } from '@/entities/token';
 
 @Exclude()
