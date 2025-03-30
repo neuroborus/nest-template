@@ -4,7 +4,13 @@ import { HealthStatus } from '@/entities/health';
 
 @Injectable()
 export class HealthService {
-  constructor(private readonly config: ConfigService) {}
+  constructor(
+    private readonly config: ConfigService,
+    /* Logger use example
+     * @InjectPinoLogger(HealthService.name)
+     * private readonly logger: PinoLogger
+     * */
+  ) {}
 
   check(): HealthStatus {
     return {
