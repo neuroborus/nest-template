@@ -15,9 +15,9 @@ The `apis` folder typically contains controllers and DTOs organized by namespace
 ```
 apis/
 ├── health/
-│ ├── health.controller.ts
-│ ├── health.api.ts
-│ ├── health-status.dto.ts
+│ ├── token.controller.ts
+│ ├── token.api.ts
+│ ├── token-info.dto.ts
 ├── user/
 │ ├── user.controller.ts
 │ ├── user.api.ts

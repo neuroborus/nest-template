@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '@/app.module';
 
-describe('HealthController (e2e)', () => {
+describe('TokenController (e2e)', () => {
   let app: INestApplication;
 
   beforeEach(async () => {
