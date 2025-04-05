@@ -19,12 +19,12 @@ export class CoinService {
     @InjectPinoLogger(CoinService.name)
     private readonly logger: PinoLogger,
     @InjectContractFactory(Erc20Contract)
-    private readonly token: ContractFactory<Erc20Contract>,
+    private readonly coin: ContractFactory<Erc20Contract>,
     @InjectMulticallFactory(CoinService.name)
     private readonly multicall: MulticallFactory,
   ) {}
 
-  public async getTokenInfo(
+  public async getCoinInfo(
     chain: Chain,
     tokenAddress: string,
     userAddress?: string,
@@ -35,7 +35,7 @@ export class CoinService {
     const multicall = this.multicall.create({
       driver,
     });
-    const contract = this.token.create({
+    const contract = this.coin.create({
       address: tokenAddress,
       driver,
     });

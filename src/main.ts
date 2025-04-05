@@ -1,3 +1,4 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { setupSwagger } from '@/swagger';
@@ -10,6 +11,11 @@ async function bootstrap() {
     bodyParser: true,
     rawBody: true,
   });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   app.useLogger(app.get(Logger));
   await setupSwagger(app);
   await app.listen(staticConfig.port);

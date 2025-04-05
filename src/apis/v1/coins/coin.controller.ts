@@ -6,11 +6,12 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { Chain } from 'ethers-tools';
 import { activeChains } from '@/config';
-import { CoinInfo } from 'src/entities/coin';
-import { CoinService } from 'src/services/coin';
+import { CoinInfo } from '@/entities/coin';
+import { CoinService } from '@/services/coin';
 import { CoinInfoDto } from './coin-info.dto';
+import { GetTokenInfoParams } from '../get-token-info.params';
+import { GetCoinInfoQuery } from './get-coin-info.query';
 
 @Controller('v1/coin')
 export class CoinController {
@@ -32,16 +33,19 @@ export class CoinController {
   @ApiQuery({
     name: 'userAddress',
     type: String,
-    description: 'Token address',
+    description: 'User address',
     required: false,
   })
   @ApiResponse({ status: 200, type: CoinInfoDto })
   @SerializeOptions({ type: CoinInfoDto })
-  getTokenInfo(
-    @Param('chain') chain: Chain,
-    @Param('tokenAddress') tokenAddress: string,
-    @Query('userAddress') userAddress?: string,
+  getCoinInfo(
+    @Param() params: GetTokenInfoParams,
+    @Query() query: GetCoinInfoQuery,
   ): Promise<CoinInfo> {
-    return this.token.getTokenInfo(chain, tokenAddress, userAddress);
+    return this.token.getCoinInfo(
+      params.chain,
+      params.tokenAddress,
+      query.userAddress,
+    );
   }
 }

@@ -8,6 +8,8 @@ It includes specific examples of:
 - Using the [**ContractFactory**](src/services/coin/coin.service.ts)
 - Using the [**MulticallFactory**](src/services/coin/coin.service.ts)
 - Using the [**AutoContractFactory**](src/services/nft/nft.service.ts), which automatically generates methods based on the contract ABI
+- Using the [**IsEthAddress**](src/apis/v1/coins/get-coin-info.query.ts) validator
+
 
 
 ## Quickstart

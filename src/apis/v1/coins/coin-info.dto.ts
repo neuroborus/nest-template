@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNumber, IsString } from 'class-validator';
-import { CoinInfo } from 'src/entities/coin';
+import { CoinInfo } from '@/entities/coin';
 
 @Exclude()
 export class CoinInfoDto implements CoinInfo {
