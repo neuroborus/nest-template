@@ -6,7 +6,7 @@ The `entities` layer is a centralized location for defining and managing core ap
 ### Key Responsibilities:
 - Define the data models and structures that represent the core concepts of the application.
 - Serve as a shared resource, accessible across the application.
-- Ensure consistency and reusability of entity definitions.
+- Ensure the consistency and reusability of entity definitions.
 
 ## Usage Guidelines
 ### Structure
