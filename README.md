@@ -1,4 +1,4 @@
-# Backend Skeleton
+# Nest Template
 
 ## Quickstart
 1. Create `.env` file and fill with the "REQUIRED" variables from `.env.xmpl`
