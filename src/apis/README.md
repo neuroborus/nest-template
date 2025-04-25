@@ -18,8 +18,10 @@ apis/
 │ ├── health.controller.ts
 │ ├── health.api.ts
 │ ├── health-status.dto.ts
-├── user/
-│ ├── user.controller.ts
-│ ├── user.api.ts
-│ ├── user.dto.ts
+├── v1/
+│ ├── user/
+│ │ ├── user.controller.ts
+│ │ ├── user.api.ts
+│ │ ├── user.dto.ts
+│ ├── v1.api.ts
 ```

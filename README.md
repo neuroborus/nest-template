@@ -9,7 +9,7 @@
 <b> As long as the application is small, there's no need to add extra layers.</b></br>
 <b> However, if necessary, it is recommended to choose from the list below. </b>
 
-This layers designed to maintain structure as it scales and organized by levels.  
+These layers are designed to maintain structure as it scales and organized by levels.  
 * By convention, higher-level layers must not be imported into lower-level ones.  
 * Additionally, layers on the same level should not import each other.
 
