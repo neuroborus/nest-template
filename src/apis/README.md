@@ -14,12 +14,14 @@ The `apis` layer is responsible for defining and managing the application's REST
 The `apis` folder typically contains controllers and DTOs organized by namespaces:
 ```
 apis/
-├── health/
+├── nft/
 │ ├── nft.controller.ts
 │ ├── nft.api.ts
 │ ├── nft-info.dto.ts
-├── user/
-│ ├── user.controller.ts
-│ ├── user.api.ts
-│ ├── user.dto.ts
+├── v1/
+│ ├── user/
+│ │ ├── user.controller.ts
+│ │ ├── user.api.ts
+│ │ ├── user.dto.ts
+│ ├── v1.api.ts
 ```
