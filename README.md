@@ -1,4 +1,4 @@
-# Backend Skeleton
+# Nest Template
 
 ## Example: Using [ethers-tools-nestjs](https://github.com/neuroborus/ethers-tools-nestjs)
 
