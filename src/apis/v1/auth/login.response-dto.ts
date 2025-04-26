@@ -26,14 +26,14 @@ export class LoginResponseDto implements LoginData {
   @IsNumber()
   @ApiProperty({
     type: Number,
-    example: 86400,
+    example: 86400000,
   })
-  accessExpireSeconds: number;
+  accessExpireMs: number;
   @Expose()
   @IsNumber()
   @ApiProperty({
     type: Number,
-    example: 604800,
+    example: 604800000,
   })
-  refreshExpireSeconds: number;
+  refreshExpireMs: number;
 }

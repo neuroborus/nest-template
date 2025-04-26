@@ -1,8 +1,26 @@
 # Nest Template
 
+# Project Description
+
+This project is a template for a NestJS application with implemented JWT authentication via an Ethereum wallet.  
+The server generates a nonce that the client must sign to confirm ownership of the address.  
+An authorized client must additionally send two headers:
+
+- `authorization` — with the `accessToken` received from the backend
+- `ethAddress` — with their Ethereum address
+
+The `refreshToken` is stored in an `httpOnly` cookie.
+
+In the [test folder](test), there is a Postman collection (a JSON file) for testing the authentication flow.  
+The collection already includes scripts for automatically filling environment variables when receiving the tokens and handling cookies.  
+For the first login, you only need to sign the nonce provided by the server.  
+You can do it using [this script](https://github.com/neuroborus/message-signer-viem).
+
+
 ## Quickstart
 1. Create `.env` file and fill with the "REQUIRED" variables from `.env.xmpl`
 2. `npm ci`
+3. `npm run prisma:deploy` (The database should exist and be running)
 3. `npm run start`
 
 ## Suggested Project Layers
@@ -25,11 +43,7 @@ These layers are designed to maintain structure as it scales and organized by le
 ## Healthcheck
 `/health`
 ```
-{
-  "status": "OK",
-  "port": 3000,
-  "logLevel": "info"
-}
+OK
 ```
 
 ## Swagger

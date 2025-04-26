@@ -10,15 +10,21 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { LoginData } from '@/entities/auth';
+import { AuthEndpoint } from '@/apis/auth-endpoint';
 import { RequestStore } from '@/stores/request';
 import { AuthFeature } from '@/features/auth';
-import { AuthEndpoint } from '@/apis/auth-endpoint';
 import { NonceResponseDto } from './nonce.response-dto';
 import { NonceRequestDto } from './nonce.request-dto';
 import { LoginResponseDto } from './login.response-dto';
 import { LoginRequestDto } from './login.request-dto';
 
-const refreshTokenCookie = 'refreshToken';
+const updateRefreshToken = (res: Response, loginData: LoginData): void => {
+  res.cookie('refreshToken', loginData.refreshToken, {
+    httpOnly: true,
+    maxAge: loginData.refreshExpireMs,
+  });
+};
 
 @Controller('v1/auth')
 export class AuthController {
@@ -45,11 +51,8 @@ export class AuthController {
       body.ethAddress,
       body.signedNonce,
     );
-    res.cookie(refreshTokenCookie, loginData.refreshToken, {
-      httpOnly: true,
-      maxAge: loginData.refreshExpireSeconds * 1000,
-    });
 
+    updateRefreshToken(res, loginData);
     return loginData;
   }
 
@@ -65,11 +68,7 @@ export class AuthController {
 
     const loginData = await this.auth.refreshSession(refreshToken);
 
-    res.cookie(refreshTokenCookie, loginData.refreshToken, {
-      httpOnly: true,
-      maxAge: loginData.refreshExpireSeconds * 1000,
-    });
-
+    updateRefreshToken(res, loginData);
     return loginData;
   }
 

@@ -69,4 +69,15 @@ export class AuthNoncesStore {
     if (!nonce) return null;
     return this.decode(nonce);
   }
+
+  public async deleteExpired(): Promise<number> {
+    const deleted = await this.prisma.authNonce.deleteMany({
+      where: {
+        expired: {
+          lt: new Date(),
+        },
+      },
+    });
+    return deleted.count;
+  }
 }

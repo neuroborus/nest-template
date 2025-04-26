@@ -31,13 +31,13 @@ model Session {
   id        String   @id @db.VarChar(36)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  expired   DateTime
 
   userId    String @map("user_id") @db.VarChar(36)
   ipAddress String @map("ip_address")
   userAgent String @map("user_agent")
 
-  refreshTokenHash String   @map("refresh_token_hash")
-  expired          DateTime
+  refreshTokenHash String @map("refresh_token_hash")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -54,10 +54,10 @@ model AuthNonce {
   id        String   @id @db.VarChar(36)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  expired   DateTime
 
-  expired    DateTime
-  ethAddress String   @unique @map("eth_address") @db.VarChar(50)
-  nonce      String   @db.VarChar(40)
+  ethAddress String @unique @map("eth_address") @db.VarChar(50)
+  nonce      String @db.VarChar(40)
 
   @@index(ethAddress)
   @@map("auth_nonces")

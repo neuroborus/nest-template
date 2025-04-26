@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { LoggerModule } from 'nestjs-pino';
 import { ConfigModule, staticConfig } from '@/config';
-import { RequestModule } from 'src/stores/request';
+import { RequestModule } from '@/stores/request';
 import { V1Api } from '@/apis/v1';
 import { HealthApi } from '@/apis/health';
 import { ClientInfoInterceptor } from './client-info.interceptor';
@@ -14,6 +15,7 @@ import { ClientInfoInterceptor } from './client-info.interceptor';
         level: staticConfig.logLevel,
       },
     }),
+    ScheduleModule.forRoot(),
     ConfigModule,
     RequestModule,
     HealthApi,

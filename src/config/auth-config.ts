@@ -1,7 +1,4 @@
-import { missEnvError } from '@/config/miss-env.error';
-
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { missEnvError } from './miss-env.error';
 
 const accessSecret = process.env.ACCESS_SECRET;
 if (!accessSecret) throw missEnvError('ACCESS_SECRET');

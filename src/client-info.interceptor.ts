@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { ClientData } from '@/entities/user';
-import { RequestStore } from 'src/stores/request';
+import { RequestStore } from '@/stores/request';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ClientInfoInterceptor implements NestInterceptor {

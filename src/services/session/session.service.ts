@@ -26,28 +26,19 @@ export class SessionService {
     userId: string,
     sessionId: string,
   ): Promise<LoginData> {
-    const accessExpireSeconds = Math.floor(
-      this.config.getOrThrow<number>('auth.accessTokenTtlMs') / 1000,
-    );
-    const refreshExpireSeconds = Math.floor(
-      this.config.getOrThrow<number>('auth.refreshTokenTtlMs') / 1000,
+    const refreshExpireMs = this.config.getOrThrow<number>(
+      'auth.refreshTokenTtlMs',
     );
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync(
-        { sub: userId },
-        {
-          expiresIn: accessExpireSeconds,
-          secret: this.config.getOrThrow('auth.accessSecret'),
-        },
-      ),
+      this.jwt.signAsync({ sub: userId }),
       this.jwt.signAsync(
         {
           sub: userId,
           sessionId,
         },
         {
-          expiresIn: refreshExpireSeconds,
+          expiresIn: Math.floor(refreshExpireMs / 1000),
           secret: this.config.getOrThrow('auth.refreshSecret'),
         },
       ),
@@ -56,8 +47,8 @@ export class SessionService {
     return {
       accessToken,
       refreshToken,
-      accessExpireSeconds,
-      refreshExpireSeconds,
+      accessExpireMs: this.config.getOrThrow<number>('auth.accessTokenTtlMs'),
+      refreshExpireMs,
     };
   }
 

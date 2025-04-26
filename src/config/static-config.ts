@@ -1,8 +1,5 @@
-import { authConfig } from '@/config/auth-config';
-import { missEnvError } from '@/config/miss-env.error';
-
-import * as dotenv from 'dotenv';
-dotenv.config();
+import { authConfig } from './auth-config';
+import { missEnvError } from './miss-env.error';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const logLevel = process.env.LOG_LEVEL

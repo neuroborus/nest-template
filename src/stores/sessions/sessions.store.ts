@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PRISMA_TRANSACTION_OPTIONS, PrismaDriver } from '@/drivers/prisma';
 import { Session } from '@/entities/user';
-import { randomId } from '@/helpers/random';
 
 type Target = Pick<Session, 'userId' | 'ipAddress' | 'userAgent'>;
 
@@ -23,18 +22,6 @@ export class SessionsStore {
       this.logger.warn('Tried to create nested transaction!');
       return fn(this);
     }
-  }
-
-  public create(
-    session: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Session> {
-    // Will throw an error if already exist
-    return this.prisma.session.create({
-      data: {
-        id: randomId(),
-        ...session,
-      },
-    });
   }
 
   public upsert(id: string, target: Target, refreshTokenHash: string) {
@@ -64,27 +51,6 @@ export class SessionsStore {
     });
   }
 
-  public update(
-    id: string,
-    data: Partial<Omit<Session, 'id' | 'createdAt' | 'updatedAt'>>,
-  ): Promise<Session> {
-    // Will throw an error if already exist
-    return this.prisma.session.update({
-      where: {
-        id,
-      },
-      data,
-    });
-  }
-
-  public find(target: Target): Promise<Session> {
-    return this.prisma.session.findUnique({
-      where: {
-        target,
-      },
-    });
-  }
-
   public get(id: string): Promise<Session | null> {
     return this.prisma.session.findUnique({
       where: {
@@ -99,5 +65,16 @@ export class SessionsStore {
         id,
       },
     });
+  }
+
+  public async deleteExpired(): Promise<number> {
+    const deleted = await this.prisma.session.deleteMany({
+      where: {
+        expired: {
+          lt: new Date(),
+        },
+      },
+    });
+    return deleted.count;
   }
 }

@@ -55,14 +55,4 @@ export class UsersStore {
     if (!user) return null;
     return this.decode(user);
   }
-
-  public async delete(ethAddress: Address): Promise<User | null> {
-    const user = await this.prisma.user.delete({
-      where: {
-        ethAddress: ethAddress.toLowerCase(),
-      },
-    });
-    if (!user) return null;
-    return this.decode(user);
-  }
 }

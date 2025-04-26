@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 import { Address } from 'viem';
 import { UsersStore } from '@/stores/users';
-import { RequestStore } from 'src/stores/request';
-import { plainToInstance } from 'class-transformer';
+import { RequestStore } from '@/stores/request';
 import { AuthHeadersDto } from './auth-headers.dto';
-import { validate } from 'class-validator';
 
 interface AccessPayload {
   sub: string; // userId
