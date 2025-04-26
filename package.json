@@ -20,7 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prisma:reset": "prisma migrate reset",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:create": "prisma migrate deploy dev --name unnamed"
+    "prisma:create": "prisma migrate dev --name unnamed"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
