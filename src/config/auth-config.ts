@@ -10,7 +10,7 @@ export const authConfig = {
   authNonceTtlMs: 1000 * 60 * 5, // 5 min
   authNonceCreationDelayMs: 1000 * 60, // 1 min
   accessSecret,
-  accessTokenTtlMs: 1000 * 60 * 60 * 24, // 1 day
+  accessTokenTtlMs: 1000 * 60 * 15, // 15 minutes
   refreshSecret,
-  refreshTokenTtlMs: 1000 * 60 * 60 * 24 * 7, // We are manually managing it, 7 days
+  refreshTokenTtlMs: 1000 * 60 * 60 * 24 * 3, // We are manually managing it, 3 days
 };
