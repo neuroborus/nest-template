@@ -25,7 +25,7 @@ export class AuthFeature {
       },
       'Nonce created',
     );
-    // !: Standard ERC-4361 can be provided
+    // !: Standard ERC-4361 can be used if a chain_id is provided: https://eips.ethereum.org/EIPS/eip-4361
     return {
       nonce,
     };
