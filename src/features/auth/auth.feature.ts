@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Address } from 'viem';
-import { LoginData } from '@/entities/auth/login-data';
+import { LoginData, NonceData } from '@/entities/auth';
 import { RequestStore } from '@/stores/request';
 import { NonceService } from '@/services/nonce';
 import { SessionService } from '@/services/session';
-import { NonceData } from '@/entities/auth';
 
 @Injectable()
 export class AuthFeature {
@@ -19,6 +18,14 @@ export class AuthFeature {
 
   public async createNonce(ethAddress: Address): Promise<NonceData> {
     const nonce = await this.nonce.create(ethAddress);
+    this.logger.trace(
+      {
+        nonce,
+        ethAddress,
+      },
+      'Nonce created',
+    );
+    // !: Standard ERC-4361 can be provided
     return {
       nonce,
     };
@@ -31,19 +38,47 @@ export class AuthFeature {
     await this.nonce.validate(ethAddress, signedNonce);
 
     const clientData = this.request.clientData;
-    return this.session.create(
+    const loginData = await this.session.create(
       ethAddress,
       clientData.ipAddress,
       clientData.userAgent,
     );
+    this.logger.trace(
+      {
+        ethAddress,
+        ...clientData,
+      },
+      'Session created',
+    );
+    return loginData;
   }
 
   public async refreshSession(refreshToken: string): Promise<LoginData> {
     const clientData = this.request.clientData;
-    return this.session.refresh(
+    const refreshData = await this.session.refresh(
       clientData.ipAddress,
       clientData.userAgent,
       refreshToken,
+    );
+    this.logger.trace(
+      {
+        ethAddress: refreshData.ethAddress,
+        ...clientData,
+      },
+      'Session refreshed',
+    );
+    return refreshData.loginData;
+  }
+
+  public async deleteSession(): Promise<void> {
+    const sessionId = this.request.sessionId;
+    await this.session.deleteSession(sessionId);
+    this.logger.trace(
+      {
+        ethAddress: this.request.ethAddress,
+        ...this.request.clientData,
+      },
+      'Session deleted',
     );
   }
 }

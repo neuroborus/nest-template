@@ -7,6 +7,9 @@ import { hash } from '@/helpers/security';
 import { randomId } from '@/helpers/random';
 import { UsersStore } from '@/stores/users';
 import { SessionsStore } from '@/stores/sessions';
+import { AccessPayload, RefreshSessionData } from '@/entities/auth';
+
+const wrongTokenErr = new HttpException('Wrong token', 401);
 
 interface RefreshPayload {
   sub: string; // userId
@@ -32,19 +35,19 @@ export class SessionService {
       'auth.refreshTokenTtlMs',
     );
 
+    const accessPayload: AccessPayload = { sub: userId, ethAddress, sessionId };
+    const refreshPayload: RefreshPayload = {
+      sub: userId,
+      ethAddress,
+      sessionId,
+    };
+
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync({ sub: userId, ethAddress }),
-      this.jwt.signAsync(
-        {
-          sub: userId,
-          ethAddress,
-          sessionId,
-        },
-        {
-          expiresIn: Math.floor(refreshExpireMs / 1000),
-          secret: this.config.getOrThrow('auth.refreshSecret'),
-        },
-      ),
+      this.jwt.signAsync(accessPayload),
+      this.jwt.signAsync(refreshPayload, {
+        expiresIn: Math.floor(refreshExpireMs / 1000),
+        secret: this.config.getOrThrow('auth.refreshSecret'),
+      }),
     ]);
 
     return {
@@ -84,9 +87,7 @@ export class SessionService {
     ipAddress: string,
     userAgent: string,
     refreshToken: string,
-  ): Promise<LoginData> {
-    const wrongTokenErr = new HttpException('Wrong token', 401);
-
+  ): Promise<RefreshSessionData> {
     let payload: RefreshPayload;
     try {
       payload = await this.jwt.verifyAsync(refreshToken, {
@@ -110,7 +111,7 @@ export class SessionService {
       throw wrongTokenErr;
     }
 
-    const tokens = await this.generateTokens(
+    const loginData = await this.generateTokens(
       payload.sub,
       payload.ethAddress,
       payload.sessionId,
@@ -123,9 +124,16 @@ export class SessionService {
         ipAddress,
         userAgent,
       },
-      hash(tokens.refreshToken),
+      hash(loginData.refreshToken),
     );
 
-    return tokens;
+    return {
+      ethAddress: payload.ethAddress,
+      loginData,
+    };
+  }
+
+  public async deleteSession(sessionId: string): Promise<void> {
+    await this.sessions.delete(sessionId);
   }
 }

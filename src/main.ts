@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { Logger } from 'nestjs-pino';
 import * as cookieParser from 'cookie-parser';
 import { setupSwagger } from '@/swagger';
@@ -23,6 +23,7 @@ async function bootstrap() {
   );
   app.use(cookieParser());
   app.useLogger(app.get(Logger));
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await setupSwagger(app);
   await app.listen(staticConfig.port);
 }

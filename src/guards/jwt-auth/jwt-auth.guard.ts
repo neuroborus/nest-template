@@ -8,15 +8,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { Address } from 'viem';
+import { AccessPayload } from '@/entities/auth';
 import { UsersStore } from '@/stores/users';
 import { RequestStore } from '@/stores/request';
 import { AuthHeadersDto } from './auth-headers.dto';
-
-interface AccessPayload {
-  sub: string; // userId
-  ethAddress: Address;
-}
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -55,8 +50,15 @@ export class JwtAuthGuard implements CanActivate {
     return instance;
   }
 
-  private saveRequestData(ethAddress: Address): void {
-    this.requestStorage.setEthAddress(ethAddress, JwtAuthGuard.name);
+  private saveRequestData(accessPayload: AccessPayload): void {
+    this.requestStorage.setEthAddress(
+      accessPayload.ethAddress,
+      JwtAuthGuard.name,
+    );
+    this.requestStorage.setSessionId(
+      accessPayload.sessionId,
+      JwtAuthGuard.name,
+    );
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -67,7 +69,7 @@ export class JwtAuthGuard implements CanActivate {
     const [, token] = authHeader.split(' ');
     try {
       const payload: AccessPayload = await this.jwt.verifyAsync(token);
-      this.saveRequestData(payload.ethAddress);
+      this.saveRequestData(payload);
 
       return true;
     } catch {
