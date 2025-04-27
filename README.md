@@ -4,10 +4,9 @@
 
 This project is a template for a NestJS application with implemented JWT authentication via an Ethereum wallet.  
 The server generates a nonce that the client must sign to confirm ownership of the address.  
-An authorized client must additionally send two headers:
+An authorized client must additionally send a header:
 
-- `authorization` — with the `accessToken` received from the backend
-- `ethAddress` — with their Ethereum address
+- `authorization` — with the `accessToken` as Bearer received from the backend
 
 The `refreshToken` is stored in an `httpOnly` cookie.
 

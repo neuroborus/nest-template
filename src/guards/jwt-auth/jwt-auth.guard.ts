@@ -15,6 +15,7 @@ import { AuthHeadersDto } from './auth-headers.dto';
 
 interface AccessPayload {
   sub: string; // userId
+  ethAddress: Address;
 }
 
 @Injectable()
@@ -58,32 +59,17 @@ export class JwtAuthGuard implements CanActivate {
     this.requestStorage.setEthAddress(ethAddress, JwtAuthGuard.name);
   }
 
-  private async verifyAccess(
-    ethAddress: Address,
-    accessToken: string,
-  ): Promise<boolean> {
-    // Guard is not using location or agent
-
-    const user = await this.users.get(ethAddress);
-    if (!user) return false;
-
-    const payload: AccessPayload = await this.jwt.verifyAsync(accessToken);
-
-    return payload.sub === user.id;
-  }
-
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const headers = await this.validations(context);
 
     const authHeader = headers.authorization;
-    const ethAddress = headers.ethAddress;
-    if (!ethAddress || !authHeader?.startsWith('Bearer ')) return false;
-
-    this.saveRequestData(ethAddress);
 
     const [, token] = authHeader.split(' ');
     try {
-      return await this.verifyAccess(ethAddress, token);
+      const payload: AccessPayload = await this.jwt.verifyAsync(token);
+      this.saveRequestData(payload.ethAddress);
+
+      return true;
     } catch {
       return false;
     }

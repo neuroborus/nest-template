@@ -3,13 +3,14 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Address } from 'viem';
 import { LoginData } from '@/entities/auth/login-data';
-import { UsersStore } from '@/stores/users';
-import { SessionsStore } from '@/stores/sessions';
 import { hash } from '@/helpers/security';
 import { randomId } from '@/helpers/random';
+import { UsersStore } from '@/stores/users';
+import { SessionsStore } from '@/stores/sessions';
 
 interface RefreshPayload {
   sub: string; // userId
+  ethAddress: Address;
   sessionId: string;
 }
 
@@ -24,6 +25,7 @@ export class SessionService {
 
   private async generateTokens(
     userId: string,
+    ethAddress: Address,
     sessionId: string,
   ): Promise<LoginData> {
     const refreshExpireMs = this.config.getOrThrow<number>(
@@ -31,10 +33,11 @@ export class SessionService {
     );
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwt.signAsync({ sub: userId }),
+      this.jwt.signAsync({ sub: userId, ethAddress }),
       this.jwt.signAsync(
         {
           sub: userId,
+          ethAddress,
           sessionId,
         },
         {
@@ -61,7 +64,7 @@ export class SessionService {
     if (!user) user = await this.users.create(ethAddress);
 
     const sessionId = randomId();
-    const tokens = await this.generateTokens(user.id, sessionId);
+    const tokens = await this.generateTokens(user.id, ethAddress, sessionId);
 
     const refreshTokenHash = hash(tokens.refreshToken);
     await this.sessions.upsert(
@@ -107,7 +110,11 @@ export class SessionService {
       throw wrongTokenErr;
     }
 
-    const tokens = await this.generateTokens(payload.sub, payload.sessionId);
+    const tokens = await this.generateTokens(
+      payload.sub,
+      payload.ethAddress,
+      payload.sessionId,
+    );
 
     await this.sessions.upsert(
       payload.sessionId,
