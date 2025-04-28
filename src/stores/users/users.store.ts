@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Address } from 'viem';
 import {
   PRISMA_TRANSACTION_OPTIONS,
@@ -11,16 +12,17 @@ import { User } from '@/entities/user';
 
 @Injectable()
 export class UsersStore {
-  private readonly logger = new Logger(UsersStore.name);
   constructor(
     private readonly prisma: PrismaDriver<'user'>,
     private readonly config: ConfigService,
+    @InjectPinoLogger(UsersStore.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   public transaction<R>(fn: (store: UsersStore) => Promise<R>) {
     if (this.prisma.$transaction) {
       return this.prisma.$transaction(async (tx) => {
-        return fn(new UsersStore(tx, this.config));
+        return fn(new UsersStore(tx, this.config, this.logger));
       }, PRISMA_TRANSACTION_OPTIONS);
     } else {
       this.logger.warn('Tried to create nested transaction!');

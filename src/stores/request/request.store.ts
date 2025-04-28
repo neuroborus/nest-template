@@ -38,6 +38,6 @@ export class RequestStore {
   get clientData(): ClientData {
     const clientData = this._clientData;
     if (!clientData) throw notFoundErr('clientData');
-    return this._clientData;
+    return clientData;
   }
 }
