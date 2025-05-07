@@ -1,5 +1,4 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const logLevel = process.env.LOG_LEVEL
