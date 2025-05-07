@@ -1,7 +1,6 @@
-import * as dotenv from 'dotenv';
+import 'dotenv/config';
 import { Chain } from 'ethers-tools';
 import { getRpcProviders } from './providers-config';
-dotenv.config();
 
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const logLevel = process.env.LOG_LEVEL
