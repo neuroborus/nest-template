@@ -13,7 +13,9 @@ export class SessionCron {
 
   @Cron(CronExpression.EVERY_HOUR)
   async clearExpired(): Promise<void> {
-    const deleted = await this.sessions.deleteExpired();
+    const deleted = await this.sessions.deleteMany({
+      expiredBefore: new Date(),
+    });
     this.logger.trace({ deleted }, 'Expired sessions cleared');
   }
 }

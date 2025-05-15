@@ -43,7 +43,7 @@ export class JwtAuthGuard implements CanActivate {
 
     if (errors.length > 0) {
       const [first] = errors;
-      const [message] = Object.values(first.constraints);
+      const [message] = Object.values(first?.constraints ?? {});
       throw new BadRequestException(message);
     }
 
@@ -51,6 +51,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   private saveRequestData(accessPayload: AccessPayload): void {
+    this.requestStorage.setUserId(accessPayload.sub, JwtAuthGuard.name);
     this.requestStorage.setEthAddress(
       accessPayload.ethAddress,
       JwtAuthGuard.name,

@@ -20,7 +20,7 @@ You can do it using [this script](https://github.com/neuroborus/message-signer-v
 1. Create `.env` file and fill with the "REQUIRED" variables from `.env.xmpl`
 2. `npm ci`
 3. `npm run prisma:deploy` (The database should exist and be running)
-3. `npm run start`
+4`npm run start`
 
 ## Suggested Project Layers
 <b> As long as the application is small, there's no need to add extra layers.</b></br>

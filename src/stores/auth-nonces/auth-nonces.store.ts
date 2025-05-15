@@ -7,6 +7,7 @@ import {
   PRISMA_TRANSACTION_OPTIONS,
   PrismaDriver,
   Prisma,
+  PrismaArgs,
 } from '@/drivers/prisma';
 import { randomAuthNonce, randomId } from '@/helpers/random';
 
@@ -72,14 +73,23 @@ export class AuthNoncesStore {
     return this.decode(nonce);
   }
 
-  public async deleteExpired(): Promise<number> {
-    const deleted = await this.prisma.authNonce.deleteMany({
-      where: {
+  public async deleteMany(
+    filters: {
+      expiredBefore?: Date;
+    } = {},
+  ): Promise<number> {
+    const { expiredBefore } = filters;
+    const findArgs: PrismaArgs<'authNonce', 'deleteMany'> = {};
+
+    if (expiredBefore) {
+      findArgs.where = {
         expired: {
-          lt: new Date(),
+          lt: expiredBefore,
         },
-      },
-    });
-    return deleted.count;
+      };
+    }
+
+    const payload = await this.prisma.authNonce.deleteMany(findArgs);
+    return payload.count;
   }
 }

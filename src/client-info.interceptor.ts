@@ -21,7 +21,7 @@ export class ClientInfoInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest<Request>();
     const clientData: ClientData = {
       ipAddress: req.ip,
-      userAgent: req.get('user-agent'),
+      userAgent: req.get('user-agent') ?? 'unknown',
     };
 
     this.reqStorage.setClientData(clientData, ClientInfoInterceptor.name);

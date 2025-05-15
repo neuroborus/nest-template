@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { PRISMA_TRANSACTION_OPTIONS, PrismaDriver } from '@/drivers/prisma';
+import {
+  PRISMA_TRANSACTION_OPTIONS,
+  PrismaArgs,
+  PrismaDriver,
+} from '@/drivers/prisma';
 import { Session } from '@/entities/user';
 
 type Target = Pick<Session, 'userId' | 'ipAddress' | 'userAgent'>;
@@ -65,14 +69,23 @@ export class SessionsStore {
     });
   }
 
-  public async deleteExpired(): Promise<number> {
-    const deleted = await this.prisma.session.deleteMany({
-      where: {
+  public async deleteMany(
+    filters: {
+      expiredBefore?: Date;
+    } = {},
+  ): Promise<number> {
+    const { expiredBefore } = filters;
+    const findArgs: PrismaArgs<'session', 'deleteMany'> = {};
+
+    if (expiredBefore) {
+      findArgs.where = {
         expired: {
-          lt: new Date(),
+          lt: expiredBefore,
         },
-      },
-    });
-    return deleted.count;
+      };
+    }
+
+    const payload = await this.prisma.session.deleteMany(findArgs);
+    return payload.count;
   }
 }

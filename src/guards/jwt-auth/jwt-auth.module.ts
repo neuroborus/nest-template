@@ -7,6 +7,6 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @Module({
   imports: [JwtDriverModule, UsersModule, RequestModule],
   providers: [JwtAuthGuard],
-  exports: [JwtDriverModule, JwtAuthGuard, UsersModule], // Everything is needed
+  exports: [JwtDriverModule, JwtAuthGuard, UsersModule, RequestModule], // Everything is needed
 })
 export class JwtAuthModule {}

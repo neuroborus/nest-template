@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { AuthNoncesStore } from '@/stores/auth-nonces';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { AuthNoncesStore } from '@/stores/auth-nonces';
 
 @Injectable()
 export class NonceCron {
@@ -13,7 +13,10 @@ export class NonceCron {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async clearExpired(): Promise<void> {
-    const deleted = await this.nonces.deleteExpired();
+    const deleted = await this.nonces.deleteMany({
+      expiredBefore: new Date(),
+    });
+
     this.logger.trace({ deleted }, 'Expired auth-nonces cleared');
   }
 }
