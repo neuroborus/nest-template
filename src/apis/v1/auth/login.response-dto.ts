@@ -23,7 +23,7 @@ export class LoginResponseDto implements LoginData {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1N2VjM2Q2ZC0xNDU5LTQ4YmQtOTQ3Zi1iZmM0MTk5ODE3NmMiLCJzZXNzaW9uSWQiOiJmOTFlYWIxMi1kNDZmLTQ0YjUtOGMwMC01ZTExMjA1NzY0MTQiLCJpYXQiOjE3NDU0OTMxOTQsImV4cCI6MTc0NjA5Nzk5NH0.d2e0ixcIg4R9_Xpsm1EUJdcRgft9Iws-kicpvEwnqYM',
   })
   @Optional()
-  @HideInProd() // Field can be usefull while debugging
+  @HideInProd() // Field can be useful while debugging
   refreshToken: string;
 
   @Expose()
