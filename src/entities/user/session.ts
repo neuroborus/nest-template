@@ -1,12 +1,12 @@
-export interface Session {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+import { ModelData } from '../model-data';
 
+export interface SessionData {
   userId: string;
   ipAddress: string;
   userAgent: string;
 
   refreshTokenHash: string;
-  expired: Date; // refreshToken
+  expired: Date;
 }
+
+export type Session = SessionData & ModelData;

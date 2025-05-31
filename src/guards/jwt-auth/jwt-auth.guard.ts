@@ -9,7 +9,6 @@ import { Request } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { AccessPayload } from '@/entities/auth';
-import { UsersStore } from '@/stores/users';
 import { RequestStore } from '@/stores/request';
 import { AuthHeadersDto } from './auth-headers.dto';
 
@@ -17,7 +16,6 @@ import { AuthHeadersDto } from './auth-headers.dto';
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwt: JwtService,
-    private readonly users: UsersStore,
     private readonly requestStorage: RequestStore,
   ) {}
 

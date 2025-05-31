@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { NODE_ENV } from '@/entities/node-env';
-import { authConfig } from './auth-config';
+import { authConfig } from './auth.config';
 import { missEnvError } from './miss-env.error';
 
 const nodeEnvStr = process.env.NODE_ENV;
@@ -39,4 +39,4 @@ export const staticConfig = {
   logLevel,
   databaseUrl,
   auth: authConfig,
-};
+} as const;

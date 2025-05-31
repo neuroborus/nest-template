@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Optional } from '@nestjs/common';
 import { Exclude, Expose } from 'class-transformer';
-import { IsNumber, IsString } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 import { LoginData } from '@/entities/auth';
 import { HideInProd } from '@/helpers/decorators';
 
@@ -27,14 +27,14 @@ export class LoginResponseDto implements LoginData {
   refreshToken: string;
 
   @Expose()
-  @IsNumber()
+  @IsInt()
   @ApiProperty({
     type: Number,
     example: 900000,
   })
   accessExpireMs: number;
   @Expose()
-  @IsNumber()
+  @IsInt()
   @ApiProperty({
     type: Number,
     example: 259200000,

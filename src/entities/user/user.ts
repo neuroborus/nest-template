@@ -1,9 +1,8 @@
 import { Address } from 'viem';
+import { ModelData } from '../model-data';
 
-export interface User {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-
+export interface UserData {
   ethAddress: Address;
 }
+
+export type User = UserData & ModelData;

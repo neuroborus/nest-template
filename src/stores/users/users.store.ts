@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Address } from 'viem';
+import { User } from '@/entities/user';
 import {
   PRISMA_TRANSACTION_OPTIONS,
   PrismaDriver,
   Prisma,
 } from '@/drivers/prisma';
 import { randomId } from '@/helpers/random';
-import { User } from '@/entities/user';
 
 @Injectable()
 export class UsersStore {
