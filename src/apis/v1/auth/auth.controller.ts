@@ -107,7 +107,7 @@ export class AuthController {
     return loginData;
   }
 
-  @Get('/test-access')
+  @Get('/access')
   @AuthEndpoint()
   @ApiResponse({ status: 200, type: String })
   @SerializeOptions({ type: String })
