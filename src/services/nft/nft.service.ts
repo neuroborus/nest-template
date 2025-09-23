@@ -36,10 +36,10 @@ export class NftService {
     });
 
     multicall.addBatch([
-      { call: contract.getNameCall() },
-      { call: contract.getTotalMintCall() },
-      { call: contract.getTotalSupplyCall() },
-      { call: contract.getBaseTokenURICall() },
+      { call: contract.getNameCall!() },
+      { call: contract.getTotalMintCall!() },
+      { call: contract.getTotalSupplyCall!() },
+      { call: contract.getBaseTokenURICall!() },
     ]);
 
     await multicall.run();

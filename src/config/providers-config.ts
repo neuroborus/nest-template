@@ -8,7 +8,7 @@ const missEnv = (envName: string) => {
 const getRpc = (
   activeChains: Chain[],
   chain: Chain,
-  env: string,
+  env: string | undefined,
   envName: string,
 ): string | null => {
   if (activeChains.includes(chain)) {
@@ -41,8 +41,8 @@ export const getRpcProviders = (
   );
 
   return {
-    [Chain.Mainnet]: new JsonRpcProvider(ethereumUrl),
-    [Chain.BNBChain]: new JsonRpcProvider(binanceUrl),
-    [Chain.Polygon]: new JsonRpcProvider(polygonUrl),
+    [Chain.Mainnet]: ethereumUrl ? new JsonRpcProvider(ethereumUrl) : undefined,
+    [Chain.BNBChain]: binanceUrl ? new JsonRpcProvider(binanceUrl) : undefined,
+    [Chain.Polygon]: polygonUrl ? new JsonRpcProvider(polygonUrl) : undefined,
   };
 };
