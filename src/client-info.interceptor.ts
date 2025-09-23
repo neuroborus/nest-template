@@ -20,7 +20,7 @@ export class ClientInfoInterceptor implements NestInterceptor {
   ): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest<Request>();
     const clientData: ClientData = {
-      ipAddress: req.ip,
+      ipAddress: req.ip ?? 'unknown',
       userAgent: req.get('user-agent') ?? 'unknown',
     };
 
