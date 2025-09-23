@@ -2,6 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HealthStatus } from '@/entities/health';
 
+/**
+ * This service is just an example; you may want to remove it.
+ */
+
 @Injectable()
 export class HealthService {
   constructor(
