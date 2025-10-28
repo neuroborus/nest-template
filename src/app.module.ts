@@ -11,9 +11,7 @@ import { ClientInfoInterceptor } from './client-info.interceptor';
 @Module({
   imports: [
     LoggerModule.forRoot({
-      pinoHttp: {
-        level: staticConfig.logLevel,
-      },
+      pinoHttp,
     }),
     ScheduleModule.forRoot(),
     ConfigModule,
