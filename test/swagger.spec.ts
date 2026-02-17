@@ -17,7 +17,10 @@ describe('setupSwagger', () => {
     expect(createDocumentSpy).toHaveBeenCalledWith(
       app,
       expect.objectContaining({
-        info: expect.objectContaining({ title: 'Backend API', version: '0.0.1' }),
+        info: expect.objectContaining({
+          title: 'Backend API',
+          version: '0.0.1',
+        }),
       }),
     );
     expect(setupSpy).toHaveBeenCalledWith(SWAGGER_URL, app, document);

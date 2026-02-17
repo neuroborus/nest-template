@@ -30,11 +30,6 @@ if (nodeEnvStr === 'test') {
   nodeEnv = NODE_ENV[nodeEnvStr.toUpperCase() as keyof typeof NODE_ENV];
 }
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-const logLevel = process.env.LOG_LEVEL
-  ? process.env.LOG_LEVEL.toLowerCase()
-  : 'info';
-
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw missEnvError('DATABASE_URL');
 
@@ -46,6 +41,7 @@ if (!databaseUrl) throw missEnvError('DATABASE_URL');
 export const staticConfig = {
   port,
   logLevel,
+  nodeEnv,
   databaseUrl,
   auth: authConfig,
 } as const;
