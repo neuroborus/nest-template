@@ -1,9 +1,15 @@
 import 'dotenv/config';
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-const logLevel = process.env.LOG_LEVEL
-  ? process.env.LOG_LEVEL.toLowerCase()
-  : 'info';
+const DEFAULT_PORT = 3000;
+const rawPort = process.env.PORT;
+const parsedPort = rawPort ? Number.parseInt(rawPort, 10) : Number.NaN;
+const port =
+  Number.isInteger(parsedPort) && parsedPort > 0 && parsedPort <= 65535
+    ? parsedPort
+    : DEFAULT_PORT;
+
+const rawLogLevel = process.env.LOG_LEVEL?.trim();
+const logLevel = rawLogLevel ? rawLogLevel.toLowerCase() : 'info';
 
 /*
  This configuration is used directly only when dependency injection is not working,

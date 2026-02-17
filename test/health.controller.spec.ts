@@ -1,26 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-
 import { HealthController } from '@/apis/health';
-import { ConfigModule } from '@/config';
+import { HealthStatus } from '@/entities/health';
 import { HealthService } from '@/services/health';
 
 describe('HealthController', () => {
-  let appController: HealthController;
+  it('returns value from health service', () => {
+    const response: HealthStatus = { status: 'OK', port: 3000, logLevel: 'info' };
+    const check = jest.fn().mockReturnValue(response);
+    const healthService = { check } as unknown as HealthService;
 
-  beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
-      controllers: [HealthController],
-      providers: [HealthService],
-    }).compile();
+    const controller = new HealthController(healthService);
 
-    appController = app.get<HealthController>(HealthController);
-  });
-
-  describe('health', () => {
-    it('should return "OK"', () => {
-      const health = appController.getHealth();
-      expect(health.status).toBe('OK');
-    });
+    expect(controller.getHealth()).toBe(response);
+    expect(check).toHaveBeenCalledTimes(1);
   });
 });

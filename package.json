@@ -26,10 +26,10 @@
     "@nestjs/swagger": "^11.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "dotenv": "^16.4.7",
+    "dotenv": "^17.3.1",
     "nestjs-pino": "^4.4.0",
-    "pino": "^9",
-    "pino-http": "^10.4.0",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
@@ -39,11 +39,11 @@
     "@nestjs/testing": "^11.1.0",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^20.3.1",
+    "@types/node": "^25.2.3",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
-    "eslint": "^9.34.0",
+    "eslint": "^10.0.0",
     "jest": "^30.0.0",
     "pino-pretty": "^13.1.1",
     "prettier": "^3.0.0",
@@ -57,8 +57,7 @@
   "overrides": {
     "multer": "2.0.2",
     "form-data": "4.0.4",
-    "tmp": "0.2.4",
-    "brace-expansion": "2.0.2"
+    "tmp": "0.2.4"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -69,12 +68,12 @@
     "rootDir": "./",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "src/**/*.ts"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/src/$1"
