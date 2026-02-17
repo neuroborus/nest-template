@@ -4,7 +4,11 @@ import { HealthService } from '@/services/health';
 
 describe('HealthController', () => {
   it('returns value from health service', () => {
-    const response: HealthStatus = { status: 'OK', port: 3000, logLevel: 'info' };
+    const response: HealthStatus = {
+      status: 'OK',
+      port: 3000,
+      logLevel: 'info',
+    };
     const check = jest.fn().mockReturnValue(response);
     const healthService = { check } as unknown as HealthService;
 

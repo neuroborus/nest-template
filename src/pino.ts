@@ -18,13 +18,13 @@ export const pinoHttp = {
   },
 
   transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l o',
-          singleLine: true,
-          levelFirst: true,
-          ignore: 'pid,hostname,context',
-        },
-      },
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l o',
+      singleLine: true,
+      levelFirst: true,
+      ignore: 'pid,hostname,context',
+    },
+  },
 };
