@@ -1,5 +1,15 @@
 import 'dotenv/config';
 
+const DEFAULT_PORT = 3000;
+const rawPort = process.env.PORT;
+const parsedPort = rawPort ? Number.parseInt(rawPort, 10) : Number.NaN;
+const port =
+  Number.isInteger(parsedPort) && parsedPort > 0 && parsedPort <= 65535
+    ? parsedPort
+    : DEFAULT_PORT;
+
+const rawLogLevel = process.env.LOG_LEVEL?.trim();
+const logLevel = rawLogLevel ? rawLogLevel.toLowerCase() : 'info';
 import { NODE_ENV } from '@/entities/node-env';
 import { authConfig } from './auth.config';
 import { missEnvError } from './miss-env.error';
@@ -34,7 +44,6 @@ if (!databaseUrl) throw missEnvError('DATABASE_URL');
  Also, it fulfills dynamic (dependency-injection-based, main) configuration.
  */
 export const staticConfig = {
-  nodeEnv,
   port,
   logLevel,
   databaseUrl,
