@@ -53,12 +53,13 @@ model AuthNonce {
   id        String   @id @db.VarChar(36)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-  expired   DateTime
+  expiresAt DateTime @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  usedByAddress String? @map("used_by_address") @db.VarChar(50)
 
-  ethAddress String @unique @map("eth_address") @db.VarChar(50)
-  nonce      String @db.VarChar(40)
+  nonce String @unique @db.VarChar(40)
 
-  @@index(ethAddress)
+  @@index(expiresAt)
   @@map("auth_nonces")
 }
 

@@ -14,7 +14,7 @@ export class NonceCron {
   @Cron(CronExpression.EVERY_MINUTE)
   async clearExpired(): Promise<void> {
     const deleted = await this.nonces.deleteMany({
-      expiredBefore: new Date(),
+      expiresBefore: new Date(),
     });
 
     this.logger.trace({ deleted }, 'Expired auth-nonces cleared');

@@ -15,7 +15,7 @@ describe('AuthNoncesStore', () => {
     authNonce: {
       create: jest.fn(),
       findUnique: jest.fn(),
-      delete: jest.fn(),
+      updateMany: jest.fn(),
       deleteMany: jest.fn(),
     },
     $transaction: jest.fn(),
@@ -27,58 +27,60 @@ describe('AuthNoncesStore', () => {
     jest.clearAllMocks();
   });
 
-  it('creates nonce with lowercase address', async () => {
+  it('creates nonce with ttl-based expiration', async () => {
     prisma.authNonce.create.mockResolvedValue({
       id: 'nonce-id',
       nonce: 'nonce-value',
-      ethAddress: '0xabc',
-      expired: new Date(),
+      expiresAt: new Date(),
+      usedAt: null,
+      usedByAddress: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    await expect(store.create('0xABC')).resolves.toEqual(
+    await expect(store.create()).resolves.toEqual(
       expect.objectContaining({
         id: 'nonce-id',
         nonce: 'nonce-value',
-        ethAddress: '0xabc',
       }),
     );
   });
 
-  it('gets nonce by lowercase address', async () => {
+  it('gets nonce by nonce value', async () => {
     prisma.authNonce.findUnique.mockResolvedValue({
       id: 'n',
       nonce: 'v',
-      ethAddress: '0xabc',
-      expired: new Date(),
+      expiresAt: new Date(),
+      usedAt: null,
+      usedByAddress: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    await expect(store.get('0xABC')).resolves.toEqual(
-      expect.objectContaining({ ethAddress: '0xabc' }),
+    await expect(store.get('v')).resolves.toEqual(
+      expect.objectContaining({ nonce: 'v' }),
     );
     expect(prisma.authNonce.findUnique).toHaveBeenCalledWith({
-      where: { ethAddress: '0xabc' },
+      where: { nonce: 'v' },
     });
   });
 
-  it('deletes nonce by lowercase address', async () => {
-    prisma.authNonce.delete.mockResolvedValue({
-      id: 'n',
-      nonce: 'v',
-      ethAddress: '0xabc',
-      expired: new Date(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  it('consumes nonce atomically', async () => {
+    prisma.authNonce.updateMany.mockResolvedValue({ count: 1 });
 
-    await expect(store.delete('0xABC')).resolves.toEqual(
-      expect.objectContaining({ ethAddress: '0xabc' }),
-    );
-    expect(prisma.authNonce.delete).toHaveBeenCalledWith({
-      where: { ethAddress: '0xabc' },
+    await expect(store.consume('n1', '0xABC')).resolves.toBe(true);
+    expect(prisma.authNonce.updateMany).toHaveBeenCalledWith({
+      where: {
+        nonce: 'n1',
+        usedAt: null,
+        expiresAt: {
+          gt: expect.any(Date),
+        },
+      },
+      data: {
+        usedAt: expect.any(Date),
+        usedByAddress: '0xabc',
+      },
     });
   });
 
@@ -88,10 +90,10 @@ describe('AuthNoncesStore', () => {
     await expect(store.deleteMany()).resolves.toBe(4);
     expect(prisma.authNonce.deleteMany).toHaveBeenCalledWith({});
 
-    const expiredBefore = new Date();
-    await expect(store.deleteMany({ expiredBefore })).resolves.toBe(4);
+    const expiresBefore = new Date();
+    await expect(store.deleteMany({ expiresBefore })).resolves.toBe(4);
     expect(prisma.authNonce.deleteMany).toHaveBeenCalledWith({
-      where: { expired: { lt: expiredBefore } },
+      where: { expiresAt: { lt: expiresBefore } },
     });
   });
 });

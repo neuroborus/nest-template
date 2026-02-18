@@ -15,7 +15,7 @@ describe('AuthFeature', () => {
 
   const nonce = {
     create: jest.fn(),
-    validate: jest.fn(),
+    validateSiwe: jest.fn(),
   } as unknown as NonceService;
 
   const session = {
@@ -33,25 +33,34 @@ describe('AuthFeature', () => {
   });
 
   it('creates nonce', async () => {
-    (nonce.create as jest.Mock).mockResolvedValue('nonce');
-
-    await expect(feature.createNonce('0xabc')).resolves.toEqual({
+    (nonce.create as jest.Mock).mockResolvedValue({
       nonce: 'nonce',
+      expiresAt: new Date('2026-01-01T00:00:00.000Z'),
     });
-    expect(nonce.create).toHaveBeenCalledWith('0xabc');
+
+    await expect(feature.createNonce()).resolves.toEqual({
+      nonce: 'nonce',
+      expiresAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    expect(nonce.create).toHaveBeenCalledWith();
   });
 
-  it('creates session after nonce validation', async () => {
+  it('creates session after SIWE validation', async () => {
+    (nonce.validateSiwe as jest.Mock).mockResolvedValue({
+      address: '0xabc',
+      nonce: 'nonce',
+      chainId: 1,
+    });
     (session.create as jest.Mock).mockResolvedValue({
       accessToken: 'a',
       refreshToken: 'r',
     });
 
-    await expect(feature.createSession('0xabc', 'sig')).resolves.toEqual({
+    await expect(feature.createSession('message', 'sig')).resolves.toEqual({
       accessToken: 'a',
       refreshToken: 'r',
     });
-    expect(nonce.validate).toHaveBeenCalledWith('0xabc', 'sig');
+    expect(nonce.validateSiwe).toHaveBeenCalledWith('message', 'sig');
     expect(session.create).toHaveBeenCalledWith('0xabc', '127.0.0.1', 'jest');
   });
 

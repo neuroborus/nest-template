@@ -1,15 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsUUID } from 'class-validator';
+import { IsDate, IsString } from 'class-validator';
 import { NonceData } from '@/entities/auth';
 
 @Exclude()
 export class NonceResponseDto implements NonceData {
   @Expose()
-  @IsUUID()
+  @IsString()
   @ApiProperty({
     type: String,
-    example: 'aab3d5e5-2d4b-4140-8a7d-9701c8bb7678',
+    example: 'n-0S8QX8v2jQL3J4',
   })
   nonce: string;
+
+  @Expose()
+  @IsDate()
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    example: '2026-02-18T10:05:00.000Z',
+  })
+  expiresAt: Date;
 }

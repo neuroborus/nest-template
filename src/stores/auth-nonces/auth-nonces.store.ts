@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { Address } from 'viem';
 import { AuthNonce } from '@/entities/auth';
 import {
   PRISMA_TRANSACTION_OPTIONS,
@@ -34,57 +33,65 @@ export class AuthNoncesStore {
   private decode(model: Prisma.AuthNonce): AuthNonce {
     return {
       ...model,
-      ethAddress: model.ethAddress as Address,
+      usedAt: model.usedAt ?? null,
+      usedByAddress: model.usedByAddress ?? null,
     };
   }
 
-  public async create(ethAddress: Address): Promise<AuthNonce> {
-    // Will throw an error if already exist
+  public async create(): Promise<AuthNonce> {
+    const expiresAt = new Date(
+      Date.now() + this.config.getOrThrow<number>('auth.authNonceTtlMs'),
+    );
+
     const nonce = await this.prisma.authNonce.create({
       data: {
         id: randomId(),
-        expired: new Date(
-          Date.now() + this.config.getOrThrow<number>('auth.authNonceTtlMs'),
-        ),
-        ethAddress: ethAddress.toLowerCase(),
+        expiresAt,
         nonce: randomAuthNonce(),
       },
     });
     return this.decode(nonce);
   }
 
-  public async get(ethAddress: Address): Promise<AuthNonce | null> {
+  public async get(nonceValue: string): Promise<AuthNonce | null> {
     const nonce = await this.prisma.authNonce.findUnique({
       where: {
-        ethAddress: ethAddress.toLowerCase(),
+        nonce: nonceValue,
       },
     });
     if (!nonce) return null;
     return this.decode(nonce);
   }
 
-  public async delete(ethAddress: Address): Promise<AuthNonce | null> {
-    const nonce = await this.prisma.authNonce.delete({
+  public async consume(nonce: string, usedByAddress: string): Promise<boolean> {
+    const payload = await this.prisma.authNonce.updateMany({
       where: {
-        ethAddress: ethAddress.toLowerCase(),
+        nonce,
+        usedAt: null,
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+      data: {
+        usedAt: new Date(),
+        usedByAddress: usedByAddress.toLowerCase(),
       },
     });
-    if (!nonce) return null;
-    return this.decode(nonce);
+    return payload.count === 1;
   }
 
   public async deleteMany(
     filters: {
-      expiredBefore?: Date;
+      expiresBefore?: Date;
     } = {},
   ): Promise<number> {
-    const { expiredBefore } = filters;
+    const { expiresBefore } = filters;
     const findArgs: PrismaArgs<'authNonce', 'deleteMany'> = {};
 
-    if (expiredBefore) {
+    if (expiresBefore) {
       findArgs.where = {
-        expired: {
-          lt: expiredBefore,
+        expiresAt: {
+          lt: expiresBefore,
         },
       };
     }

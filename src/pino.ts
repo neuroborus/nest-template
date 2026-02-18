@@ -16,6 +16,7 @@ export const pinoHttp = {
       'req.body.clientSecret',
 
       'req.body.signedNonce',
+      'req.body.signature',
     ],
     censor: '***',
   },

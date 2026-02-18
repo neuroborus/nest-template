@@ -12,7 +12,7 @@ describe('NonceCron', () => {
 
     await expect(cron.clearExpired()).resolves.toBeUndefined();
     expect(nonces.deleteMany).toHaveBeenCalledWith({
-      expiredBefore: expect.any(Date),
+      expiresBefore: expect.any(Date),
     });
     expect(logger.trace).toHaveBeenCalledWith(
       { deleted: 3 },

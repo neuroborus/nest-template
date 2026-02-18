@@ -2,8 +2,8 @@
 
 # Project Description
 
-This project is a template for a NestJS application with implemented JWT authentication via an Ethereum wallet.  
-The server generates a nonce that the client must sign to confirm ownership of the address.  
+This project is a template for a NestJS application with JWT authentication via Sign-In with Ethereum (SIWE, EIP-4361).  
+The server generates a one-time nonce, the client signs a full SIWE message, and the backend verifies message + signature before creating a session.  
 An authorized client must additionally send a header:
 
 - `authorization` — with the `accessToken` as Bearer received from the backend
@@ -12,8 +12,7 @@ The `refreshToken` is stored in an `httpOnly` cookie.
 
 In the [test folder](test), there is a Postman collection (a JSON file) for testing the authentication flow.  
 The collection already includes scripts for automatically filling environment variables when receiving the tokens and handling cookies.  
-For the first login, you only need to sign the nonce provided by the server.  
-You can do it using [this script](https://github.com/neuroborus/message-signer-viem).
+SIWE endpoints and payloads are documented in [`docs/siwe-auth.md`](docs/siwe-auth.md).
 
 
 ## Quickstart

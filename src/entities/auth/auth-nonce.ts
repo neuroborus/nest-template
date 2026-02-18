@@ -1,9 +1,9 @@
-import { Address } from 'viem';
 import { ModelData } from '../model-data';
 
 export interface AuthNonceData {
-  expired: Date;
-  ethAddress: Address;
+  expiresAt: Date;
+  usedAt: Date | null;
+  usedByAddress: string | null;
   nonce: string;
 }
 

@@ -1,1 +1,3 @@
-export const randomAuthNonce = (): string => crypto.randomUUID();
+import { generateNonce } from 'siwe';
+
+export const randomAuthNonce = (): string => generateNonce();

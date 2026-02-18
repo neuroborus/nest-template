@@ -9,7 +9,7 @@ import {
   SerializeOptions,
   HttpCode,
 } from '@nestjs/common';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CookieOptions, Request, Response } from 'express';
 import { NODE_ENV } from '@/entities/node-env';
 import { LoginData } from '@/entities/auth';
@@ -59,27 +59,49 @@ export class AuthController {
     });
   }
 
-  @Post('/nonce')
+  @Post('/siwe/nonce')
+  @ApiOperation({ summary: 'Create SIWE nonce challenge' })
   @ApiResponse({ status: 201, type: NonceResponseDto })
   @SerializeOptions({ type: NonceResponseDto })
-  createNonce(@Body() body: NonceRequestDto): Promise<NonceResponseDto> {
-    return this.auth.createNonce(body.ethAddress);
+  createSiweNonce(@Body() _body: NonceRequestDto): Promise<NonceResponseDto> {
+    return this.auth.createNonce();
   }
 
-  @Post('/login')
+  @Post('/siwe/verify')
+  @ApiOperation({ summary: 'Verify SIWE message and create session' })
   @ApiResponse({ status: 201, type: LoginResponseDto })
   @SerializeOptions({ type: LoginResponseDto })
-  async login(
+  async verifySiwe(
     @Body() body: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponseDto> {
     const loginData = await this.auth.createSession(
-      body.ethAddress,
-      body.signedNonce,
+      body.message,
+      body.signature,
     );
 
     this.updateRefreshToken(res, loginData);
     return loginData;
+  }
+
+  @Post('/nonce')
+  @ApiOperation({
+    deprecated: true,
+    summary: 'Deprecated. Use POST /v1/auth/siwe/nonce',
+  })
+  @ApiResponse({ status: 410, type: String })
+  legacyCreateNonce(): never {
+    throw new HttpException('Deprecated. Use POST /v1/auth/siwe/nonce', 410);
+  }
+
+  @Post('/login')
+  @ApiOperation({
+    deprecated: true,
+    summary: 'Deprecated. Use POST /v1/auth/siwe/verify',
+  })
+  @ApiResponse({ status: 410, type: String })
+  legacyLogin(): never {
+    throw new HttpException('Deprecated. Use POST /v1/auth/siwe/verify', 410);
   }
 
   @Post('/logout')

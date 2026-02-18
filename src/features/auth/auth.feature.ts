@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { Address } from 'viem';
 import { LoginData, NonceData } from '@/entities/auth';
 import { RequestStore } from '@/stores/request';
 import { NonceService } from '@/services/nonce';
@@ -16,36 +15,34 @@ export class AuthFeature {
     private readonly logger: PinoLogger,
   ) {}
 
-  public async createNonce(ethAddress: Address): Promise<NonceData> {
-    const nonce = await this.nonce.create(ethAddress);
+  public async createNonce(): Promise<NonceData> {
+    const nonce = await this.nonce.create();
     this.logger.trace(
       {
         nonce,
-        ethAddress,
       },
       'Nonce created',
     );
-    // !: Standard ERC-4361 can be used if a chain_id is provided: https://eips.ethereum.org/EIPS/eip-4361
-    return {
-      nonce,
-    };
+    return nonce;
   }
 
   public async createSession(
-    ethAddress: Address,
-    signedNonce: string,
+    message: string,
+    signature: string,
   ): Promise<LoginData> {
-    await this.nonce.validate(ethAddress, signedNonce);
+    const validated = await this.nonce.validateSiwe(message, signature);
 
     const clientData = this.request.clientData;
     const loginData = await this.session.create(
-      ethAddress,
+      validated.address,
       clientData.ipAddress,
       clientData.userAgent,
     );
     this.logger.trace(
       {
-        ethAddress,
+        ethAddress: validated.address,
+        nonce: validated.nonce,
+        chainId: validated.chainId,
         ...clientData,
       },
       'Session created',

@@ -23,15 +23,19 @@ describe('AuthController', () => {
   });
 
   it('creates nonce', async () => {
-    (auth.createNonce as jest.Mock).mockResolvedValue({ nonce: 'n1' });
+    (auth.createNonce as jest.Mock).mockResolvedValue({
+      nonce: 'n1',
+      expiresAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
 
-    await expect(
-      controller.createNonce({ ethAddress: '0xabc' }),
-    ).resolves.toEqual({ nonce: 'n1' });
-    expect(auth.createNonce).toHaveBeenCalledWith('0xabc');
+    await expect(controller.createSiweNonce({})).resolves.toEqual({
+      nonce: 'n1',
+      expiresAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    expect(auth.createNonce).toHaveBeenCalledWith();
   });
 
-  it('logs in and sets refresh cookie', async () => {
+  it('verifies SIWE and sets refresh cookie', async () => {
     const res = { cookie: jest.fn() } as unknown as Response;
     (auth.createSession as jest.Mock).mockResolvedValue({
       accessToken: 'a',
@@ -41,14 +45,14 @@ describe('AuthController', () => {
     });
 
     await expect(
-      controller.login({ ethAddress: '0xabc', signedNonce: 'sig' }, res),
+      controller.verifySiwe({ message: 'msg', signature: 'sig' }, res),
     ).resolves.toEqual({
       accessToken: 'a',
       refreshToken: 'r',
       accessExpireMs: 1,
       refreshExpireMs: 2,
     });
-    expect(auth.createSession).toHaveBeenCalledWith('0xabc', 'sig');
+    expect(auth.createSession).toHaveBeenCalledWith('msg', 'sig');
     expect(res.cookie).toHaveBeenCalledWith(
       'refreshToken',
       'r',
@@ -58,6 +62,14 @@ describe('AuthController', () => {
         maxAge: 2,
       }),
     );
+  });
+
+  it('rejects deprecated nonce endpoint', () => {
+    expect(() => controller.legacyCreateNonce()).toThrow(HttpException);
+  });
+
+  it('rejects deprecated login endpoint', () => {
+    expect(() => controller.legacyLogin()).toThrow(HttpException);
   });
 
   it('logs out and clears cookie', async () => {
