@@ -24,10 +24,16 @@ describe('staticConfig', () => {
 
     const { staticConfig } = await import('@/config/static-config');
 
-    expect(staticConfig).toEqual({
-      port: 3000,
-      logLevel: 'info',
-    });
+    expect(staticConfig.port).toBe(3000);
+    expect(staticConfig.logLevel).toBe('info');
+    expect(staticConfig.nodeEnv).toBeDefined();
+    expect(staticConfig.databaseUrl).toBeDefined();
+    expect(staticConfig.auth).toEqual(
+      expect.objectContaining({
+        accessSecret: expect.any(String),
+        refreshSecret: expect.any(String),
+      }),
+    );
   });
 
   it('normalizes configured values', async () => {
@@ -36,10 +42,8 @@ describe('staticConfig', () => {
 
     const { staticConfig } = await import('@/config/static-config');
 
-    expect(staticConfig).toEqual({
-      port: 4321,
-      logLevel: 'debug',
-    });
+    expect(staticConfig.port).toBe(4321);
+    expect(staticConfig.logLevel).toBe('debug');
   });
 
   it('falls back to default port when PORT is invalid', async () => {

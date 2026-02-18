@@ -22,6 +22,45 @@ You can do it using [this script](https://github.com/neuroborus/message-signer-v
 3. `npm run prisma:deploy` (The database should exist and be running)
 4. `npm run start`
 
+## Environment
+Required variables are defined in `.env.xmpl`.
+
+Prisma/runtime-critical:
+- `DATABASE_URL` (required for Prisma client and Prisma CLI)
+
+## Prisma 7 Notes
+This project is configured for Prisma 7.
+
+- Prisma config is in `prisma.config.ts`.
+- `prisma/schema.prisma` does not contain datasource URL.
+- Runtime Prisma client uses `@prisma/adapter-pg` (`PrismaPg`) instead of deprecated `datasourceUrl`.
+
+### Prisma Commands
+- Generate client: `npx prisma generate`
+- Apply existing migrations: `npm run prisma:deploy`
+- Create a new migration in dev: `npm run prisma:create`
+- Reset DB and re-apply migrations: `npm run prisma:reset`
+
+## Verification Pipeline
+Project verification commands:
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `npm test -- --runInBand`
+- `npm run test:cov -- --runInBand`
+- `npm run test:e2e -- --runInBand`
+
+## Security / npm audit
+Current known audit status:
+- `npm audit --omit=dev`: moderate advisories only, no high/critical.
+- `npm audit`: may show additional moderate advisories from dev-tooling dependencies.
+
+Important:
+- Do not run `npm audit fix --force` here for automatic Prisma-chain remediation, because it downgrades Prisma to `6.19.2` (breaking the Prisma 7 upgrade).
+- Current Prisma-related advisories are transitive/tooling-side and documented in:
+  - `docs/upgrade-report.md`
+  - `docs/prism-crosscheck.md`
+
 ## Suggested Project Layers
 <b> As long as the application is small, there's no need to add extra layers.</b></br>
 <b> However, if necessary, it is recommended to choose from the list below. </b>

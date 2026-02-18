@@ -4,7 +4,7 @@ import { PrismaClientFactory } from './prisma-client-factory';
 
 @Injectable()
 export class PrismaDriverService implements OnModuleInit, OnModuleDestroy {
-  private readonly clientsUsage: Map<PrismaClient, number>;
+  private readonly clientsUsage: Map<PrismaClient, number> = new Map();
 
   constructor(public client: PrismaClient) {}
 
@@ -21,7 +21,11 @@ export class PrismaDriverService implements OnModuleInit, OnModuleDestroy {
 
       this.client = client;
 
-      await oldClient.$disconnect();
+      const oldClientUsage = this.clientsUsage.get(oldClient) ?? 0;
+
+      if (oldClientUsage === 0) {
+        await oldClient.$disconnect();
+      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {}
   }

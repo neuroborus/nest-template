@@ -1,11 +1,13 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Logger } from '@nestjs/common';
 import { staticConfig } from '@/config';
 
 const logger = new Logger('PrismaClient');
+const adapter = new PrismaPg({ connectionString: staticConfig.databaseUrl });
 
 export const PRISMA_CLIENT = new PrismaClient({
-  datasourceUrl: staticConfig.databaseUrl,
+  adapter,
   log: [
     { level: 'info', emit: 'event' },
     { level: 'query', emit: 'event' },
